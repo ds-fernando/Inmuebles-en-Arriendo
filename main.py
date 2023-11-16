@@ -7,24 +7,29 @@ source = "inmuebles.csv"
 
 df = pd.read_csv(source)
 
-
+#LIMPIEZA
+#----------------------------------------------------------------------------------------------------------
 columnas = df.columns
 
 columnas_mantener =['Tipo Inmueble', 'Ciudad', 'Departamento', 'Estrato', 'Valor Arriendo', 'Area Construida']
 
 df_nuevo = df.drop(columns=[col for col in columnas if col not in columnas_mantener])
 
+df_nuevo.dropna(inplace = True)
 
-#Para empezar la limpieza de los datos se clasifica cuales columnas son categoricas o numericas.   -----> #print(df_nuevo.dtypes)
+df_nuevo = df_nuevo.query("`Estrato` != 0 and `Area Construida` != 0")
 
-#QUITAR COMAS Y CAMBIAR EL TIPO DE DATOS DE CADA COLUMNA QUE SE SUPONE QUE ES NUMERICA
 
-df_nuevo['Valor Arriendo'] = df_nuevo['Valor Arriendo'].astype('str')
+
+
+#-----------------------------------------------------------------------------------------------------------
+#QUITAR COMAS Y CAMBIAR EL TIPO DE DATOS DE CADA COLUMNA QUE DEBERIA SER NUMERICA
+
 df_nuevo['Valor Arriendo'] = df_nuevo['Valor Arriendo'].str.replace(',', '')
-
-df_nuevo['Valor Arriendo'] = df_nuevo['Valor Arriendo'].astype('int64')
+df_nuevo['Area Construida'] = df_nuevo['Area Construida'].str.replace(',', '').astype(float).fillna(0).astype(int)
 
 columnas_numericas = ['Estrato', 'Valor Arriendo', 'Area Construida']
-for columna in columnas_numericas:
-    df_nuevo[columna] = pd.to_numeric(df_nuevo[columna], errors='coerce')
+df_nuevo[columnas_numericas] = df_nuevo[columnas_numericas].apply(pd.to_numeric, errors='coerce')
+
+
 
