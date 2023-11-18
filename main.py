@@ -5,19 +5,33 @@ import matplotlib.pyplot as plt
 
 source = "inmuebles.csv"
 
-df = pd.read_csv(source)
+data = pd.read_csv(source)
+
+#Funciones
+#----------------------------------------------------------------------------------------------------------
+
+def quitar_tildes(texto):
+    return unidecode.unidecode(texto)
+#----------------------------------------------------------------------------------------------------------
+
+
 
 #LIMPIEZA
 #----------------------------------------------------------------------------------------------------------
-columnas = df.columns
+columnas = data.columns
 
 columnas_mantener =['Tipo Inmueble', 'Ciudad', 'Departamento', 'Estrato', 'Valor Arriendo', 'Area Construida']
 
-df_nuevo = df.drop(columns=[col for col in columnas if col not in columnas_mantener])
+#Nuevo data frame, nuevos nombre a las columnas
 
-df_nuevo.dropna(inplace = True)
+df_nuevo = data[columnas_mantener].copy().rename(columns={"Tipo Inmueble": "Inmueble", "Valor Arriendo": "Arriendo", "Area Construida": "Area"})
 
-df_nuevo = df_nuevo.query("`Estrato` != 0 and `Area Construida` != 0")
+
+
+#NUEVO DATA FRAME----------------------------------------------------------------------------------------------------------
+
+
+df_snc = df_nuevo.query("`Estrato` != 0 and `Area Construida` != 0")
 
 
 
@@ -33,15 +47,20 @@ df_nuevo[columnas_numericas] = df_nuevo[columnas_numericas].apply(pd.to_numeric,
 
 
 
-df_nuevo = df_nuevo.query("`Estrato` != 0 and `Area Construida` != 0")
 
 
 #---------------------------------------------------------------------------------------------------------------
 
+#Modificando espacios, cortando nombres en la columna ciudad, quitando tildes
+reemplazos = {
+    "Bogotá D.C.": "Bogotá",
+    "Cartagena de Indias": "Cartagena",
+    "Guadalajara de Buga": "Buga"
+}
 
-plt.scatter(df_nuevo["Valor Arriendo"],df_nuevo["Area Construida"])
-plt.ylabel("Area (metros cuadrados)")
-plt.xlabel("Valor del arrriendo")
-plt.figure(figsize=(8, 6))
+# Realiza los reemplazos en la columna "Ciudad"
+df_nuevo["Ciudad"].replace(reemplazos, inplace=True)
 
-plt.show()
+df_nuevo["Ciudad"] = df_nuevo["Ciudad"].apply(quitar_tildes)
+
+#---------------------------------------------------------------------------------------------------------------
