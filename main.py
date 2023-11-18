@@ -25,14 +25,7 @@ columnas_mantener =['Tipo Inmueble', 'Ciudad', 'Departamento', 'Estrato', 'Valor
 #Nuevo data frame, nuevos nombre a las columnas
 
 df_nuevo = data[columnas_mantener].copy().rename(columns={"Tipo Inmueble": "Inmueble", "Valor Arriendo": "Arriendo", "Area Construida": "Area"})
-
-
-
-#NUEVO DATA FRAME----------------------------------------------------------------------------------------------------------
-
-
-df_snc = df_nuevo.query("`Estrato` != 0 and `Area Construida` != 0")
-
+df_nuevo = df_nuevo[df_nuevo['Inmueble'] != 'Isla'].copy()
 
 
 
@@ -44,8 +37,7 @@ df_nuevo['Area Construida'] = df_nuevo['Area Construida'].str.replace(',', '').a
 
 columnas_numericas = ['Estrato', 'Valor Arriendo', 'Area Construida']
 df_nuevo[columnas_numericas] = df_nuevo[columnas_numericas].apply(pd.to_numeric, errors='coerce')
-
-
+df_ia = df_nuevo.query("~Inmueble.isna()")
 
 
 
@@ -64,3 +56,14 @@ df_nuevo["Ciudad"].replace(reemplazos, inplace=True)
 df_nuevo["Ciudad"] = df_nuevo["Ciudad"].apply(quitar_tildes)
 
 #---------------------------------------------------------------------------------------------------------------
+#Creacion de DataFrames
+
+
+df_rentabilidad = df_ia[["Inmueble", "Arriendo"]]
+
+df_sin_nulos = df_nuevo.dropna().copy()
+
+
+valores_a_excluir = ['Oficina', 'Local Comercial', 'Deposito', 'Garaje', 'Consultorio', 'Parqueadero Privado', 'Bodega', 'Edificacion para Hotel - Motel']
+
+df_calidad= df_sin_nulos[~df_nuevo['Inmueble'].isin(valores_a_excluir)].copy()
