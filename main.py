@@ -33,3 +33,15 @@ df_nuevo[columnas_numericas] = df_nuevo[columnas_numericas].apply(pd.to_numeric,
 
 
 
+df_nuevo = df_nuevo.query("`Estrato` != 0 and `Area Construida` != 0")
+
+
+#---------------------------------------------------------------------------------------------------------------
+
+
+plt.scatter(df_nuevo["Valor Arriendo"],df_nuevo["Area Construida"])
+plt.ylabel("Area (metros cuadrados)")
+plt.xlabel("Valor del arrriendo")
+plt.figure(figsize=(8, 6))
+
+plt.show()
